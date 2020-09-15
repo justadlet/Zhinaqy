@@ -50,7 +50,6 @@ class NewTaskViewModel {
         self.task = task
         self.project = project
         self.name = Bindable(task?.name ?? "")
-        self.date = Bindable(task?.date ?? Date())
         self.notification = Bindable(Int(task?.notification ?? 0))
         self.repeats = Bindable(Int(task?.repeats ?? 1) - 1)
         self.days = Bindable(task?.days ?? [])
@@ -58,8 +57,10 @@ class NewTaskViewModel {
         
         if let start = task?.start, let date = task?.date {
             self.start = Bindable(Date(date: date, time: start))
+            self.date = Bindable(Date(date: date, time: start))
         } else {
             self.start = Bindable(Date())
+            self.date = Bindable(Date())
         }
         if let end = task?.end, let date = task?.date {
             self.end = Bindable(Date(date: date, time: end))

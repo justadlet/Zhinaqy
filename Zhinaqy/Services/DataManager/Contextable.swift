@@ -13,8 +13,8 @@ protocol Contextable {
     func newPrivateContext() -> NSManagedObjectContext
     
     ///Save private context
-    func saveContext(_ context: NSManagedObjectContext, completion: @escaping(CoreDataResult) -> ())
+    func saveContext(_ privateContext: NSManagedObjectContext, completion: @escaping(CoreDataResult) -> ())
     
     /// Reset private context 
-    func reset(_ context: NSManagedObjectContext)
+    func reset(_ privateContext: NSManagedObjectContext)
 }

@@ -18,8 +18,9 @@ class CalendarView: UIView {
     lazy private var nextMonthButton: UIButton = {
         let button = UIButton()
         button.tag = 1
-        button.setTitle("Next", for: .normal)
-        button.setTitleColor(.main, for: .normal)
+        button.setImage(UIImage(named: "chevron.right"), for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 8, left: 28, bottom: 8, right: 16)
+        button.imageView?.tintColor = Color.main
         button.backgroundColor = Color.groupedBackground
         return button
     }()
@@ -27,8 +28,9 @@ class CalendarView: UIView {
     lazy private var prevMonthButton: UIButton = {
         let button = UIButton()
         button.tag = -1
-        button.setTitle("Prev", for: .normal)
-        button.setTitleColor(.main, for: .normal)
+        button.setImage(UIImage(named: "chevron.left"), for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 28)
+        button.imageView?.tintColor = Color.main
         button.backgroundColor = Color.groupedBackground
         return button
     }()
@@ -73,12 +75,20 @@ class CalendarView: UIView {
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout.init()
         layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 0,
+                                           left: 0,
+                                           bottom: 0,
+                                           right: 0)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        layout.itemSize = CGSize(width: self.bounds.width/7, height: self.bounds.width/7)
+        layout.itemSize = CGSize(width: self.bounds.width/7,
+                                 height: self.bounds.width/7)
         
-        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: CGRect(x: 0,
+                                                            y: 0,
+                                                            width: 0,
+                                                            height: 0),
+                                              collectionViewLayout: layout)
         collectionView.isScrollEnabled = false
         collectionView.backgroundColor = self.backgroundColor
         collectionView.dataSource = self
@@ -156,10 +166,10 @@ extension CalendarView {
     private func setConstraints() {
         prevMonthButton.anchor(top: topAnchor,
                                leading: leadingAnchor,
-                               size: .init(width: 96, height: 44))
+                               size: .init(width: 72, height: 44))
         nextMonthButton.anchor(top: topAnchor,
                                trailing: trailingAnchor,
-                               size: .init(width: 96, height: 44))
+                               size: .init(width: 72, height: 44))
         titleLabel.anchor(top: topAnchor,
                           leading: prevMonthButton.trailingAnchor,
                           trailing: nextMonthButton.leadingAnchor,
@@ -170,7 +180,7 @@ extension CalendarView {
                              size: .init(width: 0, height: 16))
         collectionView.anchor(leading: leadingAnchor,
                               trailing: trailingAnchor)
-        topConstraint.constant = CGFloat(currentDay.value.element(.weekOfMonth) - 1)*self.bounds.width/7*(-1)
+        topConstraint.constant = CGFloat(currentDay.value.element(.weekOfMonth) - 1)*self.frame.width/7*(-1)
         divider.anchor(top: collectionView.bottomAnchor,
                        bottom: bottomAnchor,
                        padding: .init(top: 8, left: 0, bottom: 8, right: 0),

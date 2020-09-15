@@ -108,11 +108,21 @@ extension ProjectsView:  UITableViewDataSource {
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        return BasicTableViewCell(
-                    style: .default,
-                    cellType: .title(
-                        title: viewModel.fetchController.object(at: indexPath).name ?? "",
-                        accessory: .none))
+        let project = viewModel.fetchController.object(at: indexPath)
+        
+        if project.type == "goal" {
+            return BasicTableViewCell(style: .subtitle,
+                                      cellType: .subtitle(
+                                        title: project.name ?? "",
+                                        details: "Deadline: \(project.deadline?.string(state: .monthDayYear) ?? "")",
+                                        accessory: .none))
+        } else {
+            return BasicTableViewCell(style: .default,
+                                      cellType: .title(title: project.name ?? "",
+                                                       accessory: .none))
+        }
+        
+        
         
     }
     

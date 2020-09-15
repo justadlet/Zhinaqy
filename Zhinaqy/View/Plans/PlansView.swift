@@ -49,7 +49,7 @@ class PlansView: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = 56
-        tableView.sectionHeaderHeight =  38
+        tableView.sectionHeaderHeight = 38
         tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: TaskTableViewCell.reuseId)
         
         return tableView
@@ -190,9 +190,15 @@ extension PlansView {
     }
     
     func setConstraints() {
-        calendarView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.safeAreaLayoutGuide.leadingAnchor, trailing: view.safeAreaLayoutGuide.trailingAnchor)
-        heightConstraint.constant = cellHeight + 68
-        tableView.anchor(top: calendarView.bottomAnchor, leading: view.safeAreaLayoutGuide.leadingAnchor, bottom: view.bottomAnchor, trailing: view.safeAreaLayoutGuide.trailingAnchor)
+        calendarView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
+                            leading: view.safeAreaLayoutGuide.leadingAnchor,
+                            trailing: view.safeAreaLayoutGuide.trailingAnchor)
+        heightConstraint.constant = cellHeight + CalendarView.additionalHeight
+        calendarView.topConstraint.constant = CGFloat(viewModel.currentDay.value.element(.weekOfMonth) - 1)*cellHeight*(-1)
+        tableView.anchor(top: calendarView.bottomAnchor,
+                         leading: view.safeAreaLayoutGuide.leadingAnchor,
+                         bottom: view.bottomAnchor,
+                         trailing: view.safeAreaLayoutGuide.trailingAnchor)
     }
 }
 
@@ -248,7 +254,9 @@ extension PlansView: UITableViewDataSource {
                                                 title: "Delete") { [weak self] (_, indexPath) in
             self?.deleteAction(task:task)
         }
-        
+        if task.typeAsEnum == .habit {
+            return [deleteAction]
+        }
         return [deleteAction, editAction]
     }
     
@@ -338,6 +346,8 @@ extension PlansView: NSFetchedResultsControllerDelegate {
         default:
             break
         }
+        
+        self.calendarView.reloadData()
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,

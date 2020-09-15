@@ -31,10 +31,12 @@ class BasicTableViewCell: UITableViewCell {
         case .rightDetail(let title, let details, let accessory):
             self.textLabel?.text = title
             self.detailTextLabel?.text = details
+            self.detailTextLabel?.textColor = Color.label
             self.accessoryType = accessory
         case .subtitle(let title, let details, let accessory):
             self.textLabel?.text = title
             self.detailTextLabel?.text = details
+            self.detailTextLabel?.textColor = Color.secondaryLabel
             self.accessoryType = accessory
         case .title(let title, let accessory):
             self.textLabel?.text = title

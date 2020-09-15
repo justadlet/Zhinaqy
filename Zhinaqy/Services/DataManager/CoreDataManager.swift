@@ -114,12 +114,12 @@ extension CoreDataManager: Contextable  {
     }
     
     
-    func saveContext(_ context: NSManagedObjectContext,
+    func saveContext(_ privateContext: NSManagedObjectContext,
                      completion: @escaping (CoreDataResult) -> ()) {
-        if context.hasChanges {
+        if privateContext.hasChanges {
             do {
-                try context.save()
-                self.reset(context)
+                try privateContext.save()
+                self.reset(privateContext)
                 DispatchQueue.main.async {
                     completion(.success)
                 }
@@ -132,8 +132,8 @@ extension CoreDataManager: Contextable  {
     }
     
     
-    func reset(_ context: NSManagedObjectContext) {
-        context.reset()
+    func reset(_ privateContext: NSManagedObjectContext) {
+        privateContext.reset()
     }
     
 }
@@ -145,12 +145,16 @@ extension CoreDataManager: Contextable  {
 extension CoreDataManager: BatchRequestable {
     
     
-    func execute(in context: NSManagedObjectContext,
+    func execute(in privateContext: NSManagedObjectContext,
                  with request: NSPersistentStoreRequest,
                  completion: @escaping (CoreDataResult) -> ()) {
         do {
-            try context.execute(request)
-            self.reset(context)
+            let result = try privateContext.execute(request) as? NSBatchDeleteResult
+            
+            let objectIDArray = result?.result as? [NSManagedObjectID]
+            let changes = [NSDeletedObjectsKey : objectIDArray]
+            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes as [AnyHashable : Any], into: [self.context])
+            self.reset(privateContext)
             DispatchQueue.main.async {
                 self.saveContext(completion: completion)
             }
@@ -202,7 +206,7 @@ extension CoreDataManager: BatchRequestable {
         privateContext.perform {
             let batchUpdate = NSBatchUpdateRequest(entityName: name)
             batchUpdate.predicate = predicate
-            batchUpdate.resultType = .statusOnlyResultType
+            batchUpdate.resultType = .updatedObjectIDsResultType
             batchUpdate.propertiesToUpdate = content
             
             self.execute(in: privateContext,
@@ -221,7 +225,7 @@ extension CoreDataManager: BatchRequestable {
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: name)
             request.predicate = predicate
             let batchDelete = NSBatchDeleteRequest(fetchRequest: request)
-            batchDelete.resultType = .resultTypeStatusOnly
+            batchDelete.resultType = .resultTypeObjectIDs
             
             self.execute(in: privateContext,
                          with: batchDelete,

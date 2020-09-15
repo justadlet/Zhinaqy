@@ -181,6 +181,9 @@ extension ProjectView: UITableViewDataSource {
             self?.deleteAction(task:task)
         }
         
+        if task.typeAsEnum == .habit {
+            return [deleteAction]
+        }
         return [deleteAction, editAction]
     }
     

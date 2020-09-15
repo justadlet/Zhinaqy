@@ -13,7 +13,7 @@ class DaysTableViewCell: UITableViewCell {
     lazy private var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: Calendar.current.shortWeekdaySymbols.map({ (day) -> UIButton in
             let button = UIButton()
-            button.setTitleColor(.black, for: .normal)
+            button.setTitleColor(Color.label, for: .normal)
             button.setTitle(day.uppercased(), for: .normal)
             button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
             button.layer.cornerRadius = 12

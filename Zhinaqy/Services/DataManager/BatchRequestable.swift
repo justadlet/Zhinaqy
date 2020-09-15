@@ -11,7 +11,7 @@ import CoreData
 protocol BatchRequestable {
     
     ///Execute batch request
-    func execute(in context: NSManagedObjectContext,
+    func execute(in privateContext: NSManagedObjectContext,
                  with request: NSPersistentStoreRequest,
                  completion: @escaping (CoreDataResult) -> ())
     
