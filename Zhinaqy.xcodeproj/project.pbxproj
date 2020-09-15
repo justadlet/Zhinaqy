@@ -192,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				33A0DB292507378F005BA9D7 /* Zhinaqy */,
+				33A364A425113FDF00A31E44 /* README.md */,
 				33A0DB282507378F005BA9D7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -217,7 +218,6 @@
 				33A0DB43250737BC005BA9D7 /* Extension */,
 				33A0DB42250737B5005BA9D7 /* Utilities */,
 				33A0DB3B25073793005BA9D7 /* Info.plist */,
-				33A364A425113FDF00A31E44 /* README.md */,
 			);
 			path = Zhinaqy;
 			sourceTree = "<group>";
