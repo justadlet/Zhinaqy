@@ -19,6 +19,7 @@ class PlansViewModel {
             NSSortDescriptor(key: "date", ascending: true),
             NSSortDescriptor(key: "start", ascending: true)
         ]
+        request.fetchBatchSize = 20
         return NSFetchedResultsController(fetchRequest: request,
                                           managedObjectContext: self.coreDataManager.context,
                                           sectionNameKeyPath: "date",

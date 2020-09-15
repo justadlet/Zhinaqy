@@ -16,6 +16,7 @@ class ProjectsViewModel {
     lazy var fetchController: NSFetchedResultsController<Project> = {
         let request = NSFetchRequest<Project>(entityName: "Project")
         request.sortDescriptors = [ NSSortDescriptor(key: "name", ascending: true) ]
+        request.fetchBatchSize = 20
         return NSFetchedResultsController(fetchRequest: request,
                                           managedObjectContext: self.coreDataManager.context,
                                           sectionNameKeyPath: "type",

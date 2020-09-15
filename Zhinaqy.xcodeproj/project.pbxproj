@@ -46,6 +46,7 @@
 		33A3649B2510B11800A31E44 /* BindableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A3649A2510B11800A31E44 /* BindableTextView.swift */; };
 		33A3649D2510B13A00A31E44 /* BindablePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A3649C2510B13A00A31E44 /* BindablePickerView.swift */; };
 		33A3649F2510B14E00A31E44 /* BindableDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A3649E2510B14E00A31E44 /* BindableDatePicker.swift */; };
+		33A364A525113FDF00A31E44 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 33A364A425113FDF00A31E44 /* README.md */; };
 		33A429CA250A074C0000872D /* UIView+Anchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A429C9250A074C0000872D /* UIView+Anchor.swift */; };
 		33A429CC250A1A570000872D /* UIViewController+UIActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A429CB250A1A570000872D /* UIViewController+UIActionSheet.swift */; };
 		33A429CE250A4DFD0000872D /* AlertCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A429CD250A4DFD0000872D /* AlertCell.swift */; };
@@ -118,6 +119,7 @@
 		33A3649A2510B11800A31E44 /* BindableTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableTextView.swift; sourceTree = "<group>"; };
 		33A3649C2510B13A00A31E44 /* BindablePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindablePickerView.swift; sourceTree = "<group>"; };
 		33A3649E2510B14E00A31E44 /* BindableDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableDatePicker.swift; sourceTree = "<group>"; };
+		33A364A425113FDF00A31E44 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		33A429C9250A074C0000872D /* UIView+Anchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Anchor.swift"; sourceTree = "<group>"; };
 		33A429CB250A1A570000872D /* UIViewController+UIActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+UIActionSheet.swift"; sourceTree = "<group>"; };
 		33A429CD250A4DFD0000872D /* AlertCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCell.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				33A0DB43250737BC005BA9D7 /* Extension */,
 				33A0DB42250737B5005BA9D7 /* Utilities */,
 				33A0DB3B25073793005BA9D7 /* Info.plist */,
+				33A364A425113FDF00A31E44 /* README.md */,
 			);
 			path = Zhinaqy;
 			sourceTree = "<group>";
@@ -452,6 +455,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33A364A525113FDF00A31E44 /* README.md in Resources */,
 				33A0DB3A25073793005BA9D7 /* LaunchScreen.storyboard in Resources */,
 				33A0DB3725073793005BA9D7 /* Assets.xcassets in Resources */,
 			);
