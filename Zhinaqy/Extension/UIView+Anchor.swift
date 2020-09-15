@@ -11,6 +11,9 @@ import UIKit
 
 extension UIView {
     
+    /**
+        Sets constant width and height
+     */
     func anchorSize(to frame: CGSize) {
         translatesAutoresizingMaskIntoConstraints = false
         self.widthAnchor.constraint(equalToConstant: frame.width).isActive = true
@@ -18,6 +21,9 @@ extension UIView {
     }
     
     
+    /**
+       Sets constant x and y centers
+    */
     func anchorCenter(x: NSLayoutXAxisAnchor? = nil,  y: NSLayoutYAxisAnchor? = nil, size: CGSize = .zero) {
         translatesAutoresizingMaskIntoConstraints = false
         if let x = x {
@@ -30,6 +36,16 @@ extension UIView {
     }
     
     
+    /**
+       Sets constant top, right, bottom and left constraints
+        - Parameters:
+            - top: Top constraint
+            - bottom: Bottom constraint
+            - right: Right constraint
+            - left: Left constraint
+            - padding: Set padding to view, default = .zero
+            - size: Sets constant size, default = .zero
+    */
     func anchor(top: NSLayoutYAxisAnchor? = nil, leading: NSLayoutXAxisAnchor? = nil, bottom: NSLayoutYAxisAnchor? = nil, trailing: NSLayoutXAxisAnchor? = nil, padding: UIEdgeInsets = .zero, size: CGSize = .zero) {
         
         translatesAutoresizingMaskIntoConstraints = false

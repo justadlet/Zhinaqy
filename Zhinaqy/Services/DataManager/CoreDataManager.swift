@@ -25,85 +25,208 @@ class CoreDataManager {
     }()
 
     
-    //MARK: View Context
+    //MARK: Main Context
     lazy var context: NSManagedObjectContext = {
         return persistentContainer.viewContext
     }()
     
     
-    // MARK: Core Data Saving support
-    func saveContext () {
-        if context.hasChanges {
+    // MARK: Save main context
+    func saveContext (completion: @escaping(CoreDataResult) -> Void) {
+        if self.context.hasChanges {
             do {
-                try context.save()
+                try self.context.save()
+                DispatchQueue.main.async {
+                    completion(.success)
+                }
             } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                DispatchQueue.main.async {
+                    completion(.error(type: .saveFailed))
+                }
             }
         }
     }
     
     
-    //MARK: Create new object
-    func create(name: String, content: [String: Any], completion: @escaping(Result<String>) -> Void) {
+}
+
+
+
+
+//MARK:- EntityModifiable
+extension CoreDataManager: EntityModifiable {
+
+
+    func create(name: String,
+                content: [String: Any],
+                completion: @escaping(CoreDataResult) -> ()) {
+        
         self.context.perform {
-            if let description = NSEntityDescription.entity(
-                forEntityName: name,
-                in: self.context) {
-                
-                let entity = NSManagedObject(
-                    entity: description,
-                    insertInto: self.context)
-                
-                for (key, value) in content {
-                    entity.setValue(value, forKey: key)
-                }
-                do {
-                    if self.context.hasChanges {
-                        try self.context.save()
-                    }
-                    completion(.success(data: "Successfully created \(description.name!)"))
-                } catch {
-                    completion(.failure(message: "Failed to create \(description.name!)"))
-                }
+            let entity = NSEntityDescription.insertNewObject(forEntityName: name,
+                                                             into: self.context)
+            for (key, value) in content {
+                entity.setValue(value, forKey: key)
             }
+            
+            self.saveContext(completion: completion)
         }
     }
     
     
-    
-    //MARK: Update existing entity
-    func update(entity: NSManagedObject, content: [String: Any], completion: @escaping(Result<String>) -> Void) {
+    func update(entity: NSManagedObject,
+                content: [String: Any],
+                completion: @escaping(CoreDataResult) -> ()) {
         self.context.perform {
             for (key, value) in content {
                 entity.setValue(value, forKey: key)
             }
-            do {
-                if self.context.hasChanges {
-                    try self.context.save()
-                }
-                completion(.success(data: "Successfully updated \(entity.entity.name!)"))
-            } catch {
-                completion(.failure(message: "Failed to update \(entity.entity.name!)"))
-            }
+            
+            self.saveContext(completion: completion)
         }
     }
     
     
-    
-    //MARK: Delete entity
-    func delete(entity: NSManagedObject, content: [String: Any], completion: @escaping(Result<String>) -> Void) {
+    func delete(entity: NSManagedObject,
+                completion: @escaping(CoreDataResult) -> ()) {
         self.context.perform {
-            do {
-                self.context.delete(entity)
-                if self.context.hasChanges {
-                    try self.context.save()
-                }
-                completion(.success(data: "Successfully deleted \(entity.entity.name!)"))
-            } catch {
-                completion(.failure(message: "Failed to update \(entity.entity.name!)"))
-            }
+            
+            self.context.delete(entity)
+            
+            self.saveContext(completion: completion)
         }
     }
+    
 }
 
+
+
+
+//MARK:- Contextable
+extension CoreDataManager: Contextable  {
+    
+    
+    func newPrivateContext() -> NSManagedObjectContext {
+        
+        let privateContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        privateContext.parent = self.context
+        
+        return privateContext
+    }
+    
+    
+    func saveContext(_ context: NSManagedObjectContext,
+                     completion: @escaping (CoreDataResult) -> ()) {
+        if context.hasChanges {
+            do {
+                try context.save()
+                self.reset(context)
+                DispatchQueue.main.async {
+                    completion(.success)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.error(type: .saveFailed))
+                }
+            }
+        }
+    }
+    
+    
+    func reset(_ context: NSManagedObjectContext) {
+        context.reset()
+    }
+    
+}
+
+
+
+
+//MARK:- BatchRequestable
+extension CoreDataManager: BatchRequestable {
+    
+    
+    func execute(in context: NSManagedObjectContext,
+                 with request: NSPersistentStoreRequest,
+                 completion: @escaping (CoreDataResult) -> ()) {
+        do {
+            try context.execute(request)
+            self.reset(context)
+            DispatchQueue.main.async {
+                self.saveContext(completion: completion)
+            }
+        } catch {
+            DispatchQueue.main.async {
+                completion(.error(type: .saveFailed))
+            }
+        }
+    }
+    
+    
+    func create(name: String,
+                content: [[String : Any]],
+                completion: @escaping (CoreDataResult) -> ()) {
+        
+        let privateContext = newPrivateContext()
+        
+        privateContext.perform {
+            content.forEach { (item) in
+                let entity = NSEntityDescription.insertNewObject(forEntityName: name,
+                                                                 into: privateContext)
+                for (key, value) in item {
+                    if let value = value as? NSManagedObject {
+                        entity.setValue(privateContext.object(with: value.objectID),
+                                        forKey: key)
+                    } else {
+                        entity.setValue(value, forKey: key)
+                    }
+                }
+            }
+            self.saveContext(privateContext) { (result) in
+                switch result {
+                case .success:
+                    self.saveContext(completion: completion)
+                default:
+                    completion(result)
+                }
+            }
+        }
+    }
+    
+    
+    func update(name: String,
+                content: [String : Any],
+                predicate: NSPredicate?,
+                completion: @escaping (CoreDataResult) -> ()) {
+        let privateContext = newPrivateContext()
+        
+        privateContext.perform {
+            let batchUpdate = NSBatchUpdateRequest(entityName: name)
+            batchUpdate.predicate = predicate
+            batchUpdate.resultType = .statusOnlyResultType
+            batchUpdate.propertiesToUpdate = content
+            
+            self.execute(in: privateContext,
+                         with: batchUpdate,
+                         completion: completion)
+        }
+    }
+    
+    
+    func delete(name: String,
+                predicate: NSPredicate?,
+                completion: @escaping (CoreDataResult) -> ()) {
+        let privateContext = newPrivateContext()
+        
+        privateContext.perform {
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: name)
+            request.predicate = predicate
+            let batchDelete = NSBatchDeleteRequest(fetchRequest: request)
+            batchDelete.resultType = .resultTypeStatusOnly
+            
+            self.execute(in: privateContext,
+                         with: batchDelete,
+                         completion: completion)
+        }
+    }
+    
+}

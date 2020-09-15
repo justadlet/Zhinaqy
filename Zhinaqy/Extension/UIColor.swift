@@ -10,6 +10,12 @@ import UIKit
 
 extension UIColor {
     
+    /**
+     Initilize color from rgb with parameters
+     -  Parameters:
+        - rgb: RGB integer
+        - a: alpha value
+     */
     convenience init(rgb: Int, a: CGFloat = 1.0) {
         self.init(
             red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,

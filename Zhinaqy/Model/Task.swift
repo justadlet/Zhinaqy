@@ -6,32 +6,56 @@
 //  Copyright © 2020 Kuanysh Anarbay. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 extension Task {
     
-    func sameDay(as date: Date) -> Bool {
-        
+    ///Returns type of the task as a NewTaskState variable
+    var typeAsEnum: NewTaskState {
         if self.type == "task" {
-            return self.start?.same(.day, as: date) ?? false
-        } else if self.type == "habit" {
-            if let start = self.start, let end = self.end {
-                var difference = Int(date.start(of: .weekOfYear).timeIntervalSince1970 - start.start(of: .weekOfYear).timeIntervalSince1970)
-                difference /= 60*60*24*7
-                
-                let repeatEnabled = self.repeats > 0 && difference % Int(self.repeats) == 0
-                if start <= date.start(of: .day) && end > date.start(of: .day).increment(.day) && repeatEnabled && (self.days?.contains(date.string(state: .weekDay).capitalized) ?? false) {
-                    return true
-                }
-            }
-            
-            return false
-        }  else if self.type == "event" {
-            return self.start?.same(.day, as: date) ?? false
+            return .task
+        } else if self.type == "event" {
+            return .event
+        } else {
+            return .habit
         }
-        
-        return false
+    }
+    
+    
+    ///Returns current progress, range = { 0.0, 1.0 }
+    var currentProgress: CGFloat {
+        if self.type == "task" {
+            switch self.step {
+            case "inProgress":
+                return 0.5
+            case "done":
+                return 1.0
+            default:
+                return 0.0
+            }
+        } else if self.type == "habit" && count > 0 {
+            return CGFloat(self.progress)/CGFloat(self.count)
+        }
+        return 1.0
+    }
+    
+    
+    ///Returns next step
+    var nextStep: String {
+        if self.step == "pending" {
+            return "inProgress"
+        }
+        return "done"
+    }
+    
+    
+    ///Returns prev step
+    var prevStep: String {
+        if self.step == "done" {
+            return "inProgress"
+        }
+        return "pending"
     }
     
 }

@@ -10,6 +10,10 @@ import Foundation
 
 protocol ViewModelFactory {
     func makePlansViewModel() -> PlansViewModel
-    func makeNewTaskViewModel(task: Task?) -> NewTaskViewModel
+    func makeNewTaskViewModel(task: Task?,
+                              project: Project) -> NewTaskViewModel
     
+    func makeProjectsViewModel() -> ProjectsViewModel
+    func makeNewProjectViewModel(with project: Project?) -> NewProjectViewModel
+    func makeProjectViewModel(with project: Project) -> ProjectViewModel
 }

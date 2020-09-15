@@ -44,8 +44,16 @@ class AlertCell: UICollectionViewCell {
     
     
     func setConstraints() {
-        timeLabel.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, padding: UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 4))
-        removeImage.anchor(top: topAnchor, leading: timeLabel.trailingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 8, left: 4, bottom: 8, right: 12), size: CGSize(width: 20, height: 20))
+        timeLabel.anchor(top: topAnchor,
+                         leading: leadingAnchor,
+                         bottom: bottomAnchor,
+                         padding: .init(top: 8, left: 12, bottom: 8, right: 4))
+        removeImage.anchor(top: topAnchor,
+                           leading: timeLabel.trailingAnchor,
+                           bottom: bottomAnchor,
+                           trailing: trailingAnchor,
+                           padding: .init(top: 8, left: 4, bottom: 8, right: 12),
+                           size: .init(width: 20, height: 20))
     }
     
 }

@@ -43,7 +43,10 @@ class TextFieldTableViewCell: UITableViewCell {
     
     
     private func setConstraints() {
-        textField.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, size: .init(width: 0, height: 44))
+        textField.anchor(top: topAnchor,
+                         leading: leadingAnchor,
+                         bottom: bottomAnchor,
+                         trailing: trailingAnchor)
     }
 }
 

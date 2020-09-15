@@ -23,7 +23,7 @@ class TextViewTableViewCell: UITableViewCell {
     init(placeholder: String?, bindable: Bindable<String>) {
         super.init(style: .default, reuseIdentifier: nil)
         
-        self.textView.bind(with: bindable, placeHolder: "Comments", autoSize: true)
+        self.textView.bind(with: bindable, placeHolder: "Comments")
         self.addViews()
         self.setConstraints()
     }
@@ -34,7 +34,11 @@ class TextViewTableViewCell: UITableViewCell {
     }
     
     private func setConstraints() {
-        textView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 8, left: 20, bottom: 8, right: 20))
+        textView.anchor(top: topAnchor,
+                        leading: leadingAnchor,
+                        bottom: bottomAnchor,
+                        trailing: trailingAnchor,
+                        padding: .init(top: 8, left: 16, bottom: 8, right: 16))
     }
     
     required init?(coder: NSCoder) {

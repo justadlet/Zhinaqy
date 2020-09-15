@@ -17,14 +17,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let winScene = (scene as? UIWindowScene) else { return }
         
+        
         window = UIWindow(windowScene: winScene)
+        window?.tintColor = Color.main
         window?.rootViewController = DependencyContainer.shared.makeRootView()
+        if let index = window?.rootViewController?.traitCollection.userInterfaceStyle.rawValue {
+            Color.setStyle(index: index)
+        }
         window?.makeKeyAndVisible()
     }
 
     
     func sceneDidEnterBackground(_ scene: UIScene) {
-        DependencyContainer.shared.coreDataManager.saveContext()
+        DependencyContainer.shared.coreDataManager.saveContext() {_ in }
     }
 
 

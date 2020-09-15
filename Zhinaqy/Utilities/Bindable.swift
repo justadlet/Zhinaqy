@@ -8,18 +8,11 @@
 
 import Foundation
 
+
 public class Bindable<T> {
     
     typealias Listener = (T) -> ()
     var listener: Listener?
-    
-    
-    func bind(_ listener: Listener?) {
-        self.listener = listener
-        listener?(value)
-    }
-    
-    
     var value: T {
         didSet {
             listener?(value)
@@ -27,9 +20,25 @@ public class Bindable<T> {
     }
     
     
+    /**
+        Initialize bindable with parameters
+        - Parameters:
+            - v: Initial value
+     */
     init(_ v: T) {
         value = v
     }
-
-
+    
+    
+    /**
+       Bind variable
+       - Parameters:
+           - listener: Notifies about change and returns value in a closure
+    */
+    func bind(_ listener: Listener?) {
+        self.listener = listener
+        listener?(value)
+    }
+    
+    
 }

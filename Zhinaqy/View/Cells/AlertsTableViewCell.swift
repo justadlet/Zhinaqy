@@ -15,6 +15,7 @@ class AlertsTableViewCell: UITableViewCell {
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: 100, height: 36)
         layout.sectionInset = .init(top: 0, left: 16, bottom: 0, right: 16)
+        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = self.backgroundColor
         collectionView.delegate = self
@@ -45,7 +46,11 @@ class AlertsTableViewCell: UITableViewCell {
     
     
     func setConstraints() {
-        collectionView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, size: CGSize(width: 0, height: 52))
+        collectionView.anchor(top: topAnchor,
+                              leading: leadingAnchor,
+                              bottom: bottomAnchor,
+                              trailing: trailingAnchor,
+                              size: .init(width: 0, height: 52))
     }
 
 }

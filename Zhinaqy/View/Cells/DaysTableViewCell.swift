@@ -53,7 +53,11 @@ class DaysTableViewCell: UITableViewCell {
     
     
     func setConstraints() {
-        stackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
+        stackView.anchor(top: topAnchor,
+                         leading: leadingAnchor,
+                         bottom: bottomAnchor,
+                         trailing: trailingAnchor,
+                         padding: .init(top: 8, left: 16, bottom: 8, right: 16))
     }
 
     

@@ -10,15 +10,22 @@ import UIKit
 
 class PlansNavigator: UINavigationController, Navigator {
     
-    let factory: ViewFactory & ViewModelFactory
+    private let factory: ViewFactory & ViewModelFactory
+    
     
     enum Destination {
-        case newTask(task: Task?, type: NewTaskState)
+        case newTask(task: Task?, type: NewTaskState, project: Project)
+        case project(project: Project)
     }
     
+
     init(factory: DependencyContainer) {
         self.factory = factory
         super.init(rootViewController: factory.makePlansView())
+        self.tabBarItem = UITabBarItem(title: "Plans",
+                                       image: UIImage(named: "plans"),
+                                       tag: 0)
+        self.view.backgroundColor = Color.systemBackground
     }
     
     
@@ -27,16 +34,21 @@ class PlansNavigator: UINavigationController, Navigator {
     }
     
     
-    
     func navigate(to destination: Destination) {
         self.pushViewController(self.makeDestination(to: destination), animated: true)
     }
     
     
-    func makeDestination(to destination: Destination) -> UIViewController {
+    private func makeDestination(to destination: Destination) -> UIViewController {
         switch destination {
-        case .newTask(let task, let type):
-            return factory.makeNewTaskView(with: task, type: type)
+        case .newTask(let task,
+                      let type,
+                      let project):
+            return factory.makeNewTaskView(with: task,
+                                           type: type,
+                                           project: project)
+        case .project(let project):
+            return factory.makeProjectView(with: project)
         }
     }
 }

@@ -8,14 +8,13 @@
 
 import UIKit
 
-class DependencyContainer {
+
+final class DependencyContainer {
     
-    
-    //MARK: Init
-    //Singleton
+    ///Singleton element
     static let shared = DependencyContainer()
     
-    //Avoiding multiple instances
+    ///Avoiding multiple instances
     private init() {}
     
     
@@ -24,40 +23,3 @@ class DependencyContainer {
 }
 
 
-
-extension DependencyContainer: ViewModelFactory {
-    
-    func makePlansViewModel() -> PlansViewModel {
-        return PlansViewModel(with: self.coreDataManager)
-    }
-    
-    
-    func makeNewTaskViewModel(task: Task?) -> NewTaskViewModel {
-        return NewTaskViewModel(coreDataManager: self.coreDataManager, task: task)
-    }
-    
-    
-}
-
-
-extension DependencyContainer: ViewFactory {
-    
-    
-    func makeNewTaskView(with task: Task?, type: NewTaskState) -> NewTaskView {
-        return NewTaskView(type: type, viewModel: self.makeNewTaskViewModel(task: task))
-    }
-    
-    
-    func makeRootView() -> UITabBarController {
-        return RootView(views: [self.makePlansNavigationView()])
-    }
-    
-    func makePlansNavigationView() -> UINavigationController {
-        return PlansNavigator(factory: self)
-    }
-    
-    func makePlansView() -> PlansView {
-        return PlansView(viewModel: self.makePlansViewModel())
-    }
-    
-}

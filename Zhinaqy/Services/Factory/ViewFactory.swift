@@ -10,7 +10,13 @@ import UIKit
 
 protocol ViewFactory {
     func makeRootView() -> UITabBarController
-    func makePlansNavigationView() -> UINavigationController
     func makePlansView() -> PlansView
-    func makeNewTaskView(with task: Task?, type: NewTaskState) -> NewTaskView
+    func makeNewTaskView(with task: Task?,
+                         type: NewTaskState,
+                         project: Project) -> NewTaskView
+    
+    func makeProjectsView() -> ProjectsView
+    func makeNewProjectView(with project: Project?,
+                            type: NewProjectState)  -> NewProjectView
+    func makeProjectView(with project: Project) -> ProjectView
 }

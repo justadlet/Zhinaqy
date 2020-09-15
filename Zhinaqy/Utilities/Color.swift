@@ -13,14 +13,26 @@ struct Color {
     static let main = UIColor(red: 0.941, green: 0.769, blue: 0.106, alpha: 1.0)
     static let appearance = UserDefaults.standard.string(forKey: "appearance") ?? "system"
     
+    static func setStyle(index: Int) {
+        UserDefaults.standard.setValue(["system", "light", "dark"][index], forKey: "appearance")
+    }
+    
+    
     static var red: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xFF3B30)
+        if #available(iOS 13, *) {
+            return UIColor.systemRed
         } else {
-            return UIColor(rgb: 0xFF453A)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xFF3B30)
+            } else {
+                return UIColor(rgb: 0xFF453A)
+            }
         }
     }
     static var orange: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemOrange
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0xFF9500)
         } else {
@@ -28,6 +40,9 @@ struct Color {
         }
     }
     static var yellow: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemYellow
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0xFFCC00)
         } else {
@@ -35,6 +50,9 @@ struct Color {
         }
     }
     static var green: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemGreen
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0x34C759)
         } else {
@@ -42,6 +60,9 @@ struct Color {
         }
     }
     static var teal: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemTeal
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0x5AC8FA)
         } else {
@@ -49,6 +70,9 @@ struct Color {
         }
     }
     static var blue: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemBlue
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0x007AFF)
         } else {
@@ -56,6 +80,9 @@ struct Color {
         }
     }
     static var indigo: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemIndigo
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0x5856D6)
         } else {
@@ -63,6 +90,9 @@ struct Color {
         }
     }
     static var purple: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemPurple
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0xAF52DE)
         } else {
@@ -70,6 +100,9 @@ struct Color {
         }
     }
     static var pink: UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemPink
+        }
         if appearance == "light" || (appearance == "system" && !Date().darkMode) {
             return UIColor(rgb: 0xFF2F55)
         } else {
@@ -80,135 +113,201 @@ struct Color {
 }
 
 
-extension  Color {
+extension Color {
     
     static var systemBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xFFFFFF)
+        if #available(iOS 13, *) {
+            return UIColor.systemBackground
         } else {
-            return UIColor(rgb: 0x1C1C1E)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xFFFFFF)
+            } else {
+                return UIColor(rgb: 0x1C1C1E)
+            }
         }
     }
     static var secondarySystemBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xEFEFF4)
+        if #available(iOS 13, *) {
+            return UIColor.secondarySystemBackground
         } else {
-            return UIColor(rgb: 0x2C2C2E)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xEFEFF4)
+            } else {
+                return UIColor(rgb: 0x2C2C2E)
+            }
         }
     }
     static var tertiarySystemBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xFFFFFF)
+        if #available(iOS 13, *) {
+            return UIColor.tertiarySystemBackground
         } else {
-            return UIColor(rgb: 0x3A3A3C)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xE5E5E3)
+            } else {
+                return UIColor(rgb: 0x3A3A3C)
+            }
         }
     }
     
 }
 
-extension  Color {
+extension Color {
     
     static var groupedBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xEFEFF4)
+        if #available(iOS 13, *) {
+            return UIColor.systemGroupedBackground
         } else {
-            return UIColor(rgb: 0x000000)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xEFEFF4)
+            } else {
+                return UIColor(rgb: 0x000000)
+            }
         }
     }
     static var secondaryGroupedBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xFFFFFF)
+        if #available(iOS 13, *) {
+            return UIColor.secondarySystemGroupedBackground
         } else {
-            return UIColor(rgb: 0x1C1C1E)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xFFFFFF)
+            } else {
+                return UIColor(rgb: 0x1C1C1E)
+            }
         }
     }
     static var tertiaryGroupedBackground: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xEFEFF4)
+        if #available(iOS 13, *) {
+            return UIColor.tertiarySystemGroupedBackground
         } else {
-            return UIColor(rgb: 0x2C2C2E)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xEFEFF4)
+            } else {
+                return UIColor(rgb: 0x2C2C2E)
+            }
         }
     }
 }
 
-extension  Color {
+extension Color {
     
     static var primaryFill: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x787880, a: 0.2)
+        if #available(iOS 13, *) {
+            return UIColor.systemFill
         } else {
-            return UIColor(rgb: 0x787880, a: 0.36)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x787880, a: 0.2)
+            } else {
+                return UIColor(rgb: 0x787880, a: 0.36)
+            }
         }
     }
     static var secondaryFill: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x787880, a: 0.16)
+        if #available(iOS 13, *) {
+            return UIColor.secondarySystemFill
         } else {
-            return UIColor(rgb: 0x787880, a: 0.32)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x787880, a: 0.16)
+            } else {
+                return UIColor(rgb: 0x787880, a: 0.32)
+            }
         }
     }
     static var tertiaryFill: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x767680, a: 0.12)
+        if #available(iOS 13, *) {
+            return UIColor.tertiarySystemFill
         } else {
-            return UIColor(rgb: 0x767680, a: 0.24)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x767680, a: 0.12)
+            } else {
+                return UIColor(rgb: 0x767680, a: 0.24)
+            }
         }
     }
     static var quarternaryFill: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x74748, a: 0.08)
+        if #available(iOS 13, *) {
+            return UIColor.quaternarySystemFill
         } else {
-            return UIColor(rgb: 0x747480, a: 0.18)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x74748, a: 0.08)
+            } else {
+                return UIColor(rgb: 0x747480, a: 0.18)
+            }
         }
     }
 }
 
-extension  Color {
+extension Color {
     
     static var label: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x000000)
+        if #available(iOS 13, *) {
+            return UIColor.label
         } else {
-            return UIColor(rgb: 0xFFFFFF)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x000000)
+            } else {
+                return UIColor(rgb: 0xFFFFFF)
+            }
         }
     }
     static var secondaryLabel: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x3C3C43, a: 0.6)
+        if #available(iOS 13, *) {
+            return UIColor.secondaryLabel
         } else {
-            return UIColor(rgb: 0xEBEBF5, a: 0.6)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x3C3C43, a: 0.6)
+            } else {
+                return UIColor(rgb: 0xEBEBF5, a: 0.6)
+            }
         }
     }
     static var tertiaryLabel: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x3C3C43, a: 0.3)
+        if #available(iOS 13, *) {
+            return UIColor.tertiaryLabel
         } else {
-            return UIColor(rgb: 0xEBEBF5, a: 0.3)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x3C3C43, a: 0.3)
+            } else {
+                return UIColor(rgb: 0xEBEBF5, a: 0.3)
+            }
+            
         }
     }
     static var quarternaryLabel: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x3C3C43, a: 0.18)
+        if #available(iOS 13, *) {
+            return UIColor.quaternaryLabel
         } else {
-            return UIColor(rgb: 0xEBEBF5, a: 0.18)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x3C3C43, a: 0.18)
+            } else {
+                return UIColor(rgb: 0xEBEBF5, a: 0.18)
+            }
         }
     }
 }
 
-extension  Color {
+extension Color {
     
     static var separator: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0x3C3C43, a: 0.29)
+        if #available(iOS 13, *) {
+            return UIColor.separator
         } else {
-            return UIColor(rgb: 0x545458, a: 0.65)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0x3C3C43, a: 0.29)
+            } else {
+                return UIColor(rgb: 0x545458, a: 0.65)
+            }
+            
         }
     }
     static var opaqueSeparator: UIColor {
-        if appearance == "light" || (appearance == "system" && !Date().darkMode) {
-            return UIColor(rgb: 0xC6C6C8)
+        if #available(iOS 13, *) {
+            return UIColor.opaqueSeparator
         } else {
-            return UIColor(rgb: 0x38383A)
+            if appearance == "light" || (appearance == "system" && !Date().darkMode) {
+                return UIColor(rgb: 0xC6C6C8)
+            } else {
+                return UIColor(rgb: 0x38383A)
+            }
         }
     }
 }

@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreData
+
 
 class CalendarView: UIView {
     
@@ -15,7 +17,8 @@ class CalendarView: UIView {
     //MARK: UI Variables
     lazy private var nextMonthButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Prev", for: .normal)
+        button.tag = 1
+        button.setTitle("Next", for: .normal)
         button.setTitleColor(.main, for: .normal)
         button.backgroundColor = Color.groupedBackground
         return button
@@ -23,16 +26,16 @@ class CalendarView: UIView {
     
     lazy private var prevMonthButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Next", for: .normal)
+        button.tag = -1
+        button.setTitle("Prev", for: .normal)
         button.setTitleColor(.main, for: .normal)
         button.backgroundColor = Color.groupedBackground
         return button
     }()
     
-    lazy private var titleLabel: BindableLabel<Date> = {
-        let label = BindableLabel<Date>()
+    lazy var titleLabel: UILabel = {
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-        label.bind(with: self.currentDay, with: { $0.string(state: .monthYear) })
         label.textAlignment = .center
         label.backgroundColor = Color.groupedBackground
         return label
@@ -92,16 +95,25 @@ class CalendarView: UIView {
     }()
     
     
-    var days: [Day] = []
+    let fetchController: NSFetchedResultsController<Task>
     let currentMonth: Bindable<Date>
     let currentDay: Bindable<Date>
     
     
-    init(frame: CGRect, month: Bindable<Date>, day: Bindable<Date>) {
-        currentMonth = month
-        currentDay = day
+    init(frame: CGRect,
+         fetchController: NSFetchedResultsController<Task>,
+         currentMonth: Bindable<Date>,
+         currentDay: Bindable<Date>,
+         target: PlansView,
+         updateMonth: Selector) {
+        
+        self.fetchController = fetchController
+        self.currentMonth = currentMonth
+        self.currentDay = currentDay
         super.init(frame: frame)
         
+        nextMonthButton.addTarget(target, action: updateMonth, for: .touchDown)
+        prevMonthButton.addTarget(target, action: updateMonth, for: .touchDown)
         addViews()
         setConstraints()
         collectionView.reloadData()
@@ -113,8 +125,7 @@ class CalendarView: UIView {
     }
     
     
-    func configure(days: [Day]) {
-        self.days = days
+    func reloadData() {
         self.collectionView.reloadData()
     }
     
@@ -143,13 +154,27 @@ extension CalendarView {
     
     
     private func setConstraints() {
-        prevMonthButton.anchor(top: topAnchor, leading: leadingAnchor, size: CGSize(width: 96, height: 44))
-        nextMonthButton.anchor(top: topAnchor, trailing: trailingAnchor, size: CGSize(width: 96, height: 44))
-        titleLabel.anchor(top: topAnchor, leading: prevMonthButton.trailingAnchor, trailing: nextMonthButton.leadingAnchor, size: CGSize(width: 0, height: 44))
-        weekStackView.anchor(top: titleLabel.bottomAnchor, leading: leadingAnchor, trailing: trailingAnchor, size: .init(width: 0, height: 16))
-        collectionView.anchor(leading: leadingAnchor, trailing: trailingAnchor)
+        prevMonthButton.anchor(top: topAnchor,
+                               leading: leadingAnchor,
+                               size: .init(width: 96, height: 44))
+        nextMonthButton.anchor(top: topAnchor,
+                               trailing: trailingAnchor,
+                               size: .init(width: 96, height: 44))
+        titleLabel.anchor(top: topAnchor,
+                          leading: prevMonthButton.trailingAnchor,
+                          trailing: nextMonthButton.leadingAnchor,
+                          size: .init(width: 0, height: 44))
+        weekStackView.anchor(top: titleLabel.bottomAnchor,
+                             leading: leadingAnchor,
+                             trailing: trailingAnchor,
+                             size: .init(width: 0, height: 16))
+        collectionView.anchor(leading: leadingAnchor,
+                              trailing: trailingAnchor)
         topConstraint.constant = CGFloat(currentDay.value.element(.weekOfMonth) - 1)*self.bounds.width/7*(-1)
-        divider.anchor(top: collectionView.bottomAnchor, bottom: bottomAnchor, padding: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0), size: CGSize(width: 66, height: 6))
+        divider.anchor(top: collectionView.bottomAnchor,
+                       bottom: bottomAnchor,
+                       padding: .init(top: 8, left: 0, bottom: 8, right: 0),
+                       size: .init(width: 66, height: 6))
         divider.anchorCenter(x: self.centerXAnchor)
     }
 }
@@ -162,20 +187,26 @@ extension CalendarView {
 //MARK:- CollectionView datasource
 extension CalendarView: UICollectionViewDataSource {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
         return currentMonth.value.count(get: .weekOfMonth, from: .month)*7
     }
     
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DayCell.reuseId, for: indexPath) as! DayCell
         
         let indexOfFirstDay = currentMonth.value.element(.weekday) - 1
-        if indexPath.row >= indexOfFirstDay && indexPath.row < indexOfFirstDay + currentMonth.value.count(get: .day, from: .month) {
-            let day = days[indexPath.row - indexOfFirstDay]
-            cell.configure(day: day, currentDay: self.currentDay.value.same(.day, as: day.date))
-        }
+        let date = currentMonth.value.increment(by: indexPath.row - indexOfFirstDay, .day)
+        let sameMonth = indexPath.row >= indexOfFirstDay && indexPath.row < indexOfFirstDay + currentMonth.value.count(get: .day, from: .month)
+        
+        let section = fetchController.sections?.first(where: { Date($0.name).same(.day, as: date) })
+        cell.configure(date: date,
+                       section: section,
+                       currentDay: self.currentDay.value.same(.day, as: date),
+                       currentMonth: sameMonth)
         
         return cell
     }
@@ -187,12 +218,15 @@ extension CalendarView: UICollectionViewDataSource {
 extension CalendarView: UICollectionViewDelegate {
     
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let indexOfFirstDay = currentMonth.value.element(.weekday) - 1
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
         
-        if indexPath.row >= indexOfFirstDay && indexPath.row < indexOfFirstDay + currentMonth.value.count(get: .day, from: .month) {
+        
+        let indexOfFirstDay = currentMonth.value.element(.weekday) - 1
+        let sameMonth = indexPath.row >= indexOfFirstDay && indexPath.row < indexOfFirstDay + currentMonth.value.count(get: .day, from: .month)
+        if sameMonth {
             let temp = currentDay.value.element(.day) + indexOfFirstDay - 1
-            currentDay.value = days[indexPath.row - indexOfFirstDay].date
+            currentDay.value = currentMonth.value.increment(by: indexPath.row - indexOfFirstDay, .day)
             collectionView.reloadItems(at: [indexPath, IndexPath(item: temp, section: 0)])
         }
         

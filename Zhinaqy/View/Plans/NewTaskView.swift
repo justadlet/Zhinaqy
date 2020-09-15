@@ -36,11 +36,11 @@ class NewTaskView: UITableViewController {
     
     lazy private var endDatePicker: BindableDatePicker = {
         let datePicker = BindableDatePicker()
-        datePicker.datePickerMode = self.type == .habit ? .date : .dateAndTime
+        datePicker.datePickerMode = self.type == .habit ? .date : .time
         return datePicker
     }()
     
-    lazy private var deadlineDatePicker: BindableDatePicker = {
+    lazy private var dateDatePicker: BindableDatePicker = {
         let datePicker = BindableDatePicker()
         datePicker.datePickerMode = .dateAndTime
         return datePicker
@@ -85,7 +85,6 @@ class NewTaskView: UITableViewController {
     }
     
     
-    
     override func viewDidLoad() {
         self.addViews()
         self.bindViewModel()
@@ -93,7 +92,8 @@ class NewTaskView: UITableViewController {
     
     
     func addViews() {
-        self.tableView = UITableView(frame: .zero, style: .grouped)
+        self.tableView = UITableView(frame: .zero,
+                                     style: .grouped)
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 44
         self.navigationItem.rightBarButtonItem = rightNavButton
@@ -103,27 +103,34 @@ class NewTaskView: UITableViewController {
     private func bindViewModel() {
         endDatePicker.bind(with: viewModel.end)
         startDatePicker.bind(with: viewModel.start)
-        deadlineDatePicker.bind(with: viewModel.deadline)
-        notificationPicker.bind(with: viewModel.notificationValues, with: viewModel.notification)
-        repeatsPicker.bind(with: type == .habit ? viewModel.repetitionValues : viewModel.eventRepetitionValues, with: viewModel.repeats)
+        dateDatePicker.bind(with: viewModel.date)
+        notificationPicker.bind(with: viewModel.notificationValues,
+                                with: viewModel.notification)
+        repeatsPicker.bind(with: viewModel.repetitionValues,
+                           with: viewModel.repeats)
         viewModel.days.bind { [weak self] _ in
-            self?.tableView.reloadRows(at: [IndexPath(row: 1, section: 3)], with: .none)
+            self?.tableView.reloadRows(at: [IndexPath(row: 1, section: 3)],
+                                       with: .automatic)
         }
         viewModel.alerts.bind { [weak self] (_) in
-            self?.tableView.reloadSections([4], with: .automatic)
+            self?.tableView.reloadSections([4],
+                                           with: .automatic)
         }
-        countPicker.bind(with: Array(1...50).map({ "\($0)" }), with: viewModel.count)
+        countPicker.bind(with: Array(1...50).map({ "\($0)" }),
+                         with: viewModel.count)
     }
     
     
     
     @objc private func save() {
         viewModel.done(type: type) { result in
-            switch result  {
-            case .success(let message):
-                print(message)
+            switch result {
+            case .success:
                 self.navigationController?.popViewController(animated: true)
-            case .failure(let message):
+            case .error(let type):
+                print(type.rawValue)
+                break
+            case .wrongParameter(let message):
                 print(message)
                 break
             }
@@ -143,16 +150,16 @@ extension NewTaskView {
         case .habit:
             return 5
         case .event:
-            return 4
+            return 3
         }
     }
     
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView,
+                            numberOfRowsInSection section: Int) -> Int {
+        
         if section == 0 {
             return 1
-        } else if type == .event && section == 2 {
-            return viewModel.repeats.value == 0 ? 1 : 2
         } else if type == .habit && section == 4 {
             return viewModel.alerts.value.isEmpty ? 1 : 2
         }
@@ -161,10 +168,12 @@ extension NewTaskView {
     }
     
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if indexPath.section == 0 {
-            return TextFieldTableViewCell(placeholder: "Type \(type.rawValue) name", bindable: viewModel.name)
+            return TextFieldTableViewCell(placeholder: "Type \(type.rawValue) name",
+                                          bindable: viewModel.name)
         }
         
         switch type {
@@ -174,7 +183,7 @@ extension NewTaskView {
                         style: .value1,
                         cellType: .rightDetail(
                             title: "Deadline",
-                            details: viewModel.deadline.value.string(state: .dateTime),
+                            details: viewModel.date.value.string(state: .dateTime),
                             accessory: .disclosureIndicator))
             } else {
                 return BasicTableViewCell(
@@ -249,19 +258,8 @@ extension NewTaskView {
                             style: .value1,
                             cellType: .rightDetail(
                                 title: "End",
-                                details: viewModel.end.value.string(state: .dateTime),
+                                details: viewModel.end.value.string(state: .time),
                                 accessory: .disclosureIndicator))
-                }
-            } else if indexPath.section == 2 {
-                if indexPath.row == 0 {
-                    return BasicTableViewCell(
-                            style: .value1,
-                            cellType: .rightDetail(
-                                title: "Repeats",
-                                details: viewModel.eventRepetitionValues[viewModel.repeats.value],
-                                accessory: .disclosureIndicator))
-                } else {
-                    return DaysTableViewCell(bindable: viewModel.days)
                 }
             } else {
                 if indexPath.row == 0 {
@@ -280,7 +278,8 @@ extension NewTaskView {
     
     
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView,
+                            titleForHeaderInSection section: Int) -> String? {
         
         if section == 0 {
             return "\(type.rawValue.capitalized) name"
@@ -300,8 +299,6 @@ extension NewTaskView {
         case .event:
             if section == 1 {
                 return "Event start and end"
-            } else if section == 2 {
-                return "Repetition"
             } else {
                 return "Additional info"
             }
@@ -309,17 +306,18 @@ extension NewTaskView {
     }
     
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView,
+                            heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if indexPath.section == 0 || (type == .habit && indexPath == IndexPath(row: 1, section: 1)) {
+            return 44
+        }
         
         if type == .habit && indexPath == IndexPath(row: 1, section: 3)  {
             return (self.tableView.bounds.width - 80)/7 + 16
         }
         
-        if type == .event && indexPath == IndexPath(row: 1, section: 2)  {
-            return (self.tableView.bounds.width - 80)/7 + 16
-        }
-        
-        if type == .event && indexPath == IndexPath(row: 1, section: 3) {
+        if type == .event && indexPath == IndexPath(row: 1, section: 2) {
             return 200
         }
         
@@ -333,12 +331,13 @@ extension NewTaskView {
 
 
 extension NewTaskView {
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView,
+                            didSelectRowAt indexPath: IndexPath) {
         
         switch type {
         case .task:
             if indexPath == IndexPath(row: 0, section: 1) {
-                self.showDatePickerView(datePicker: deadlineDatePicker) { [weak self] (_) in
+                self.showDatePickerView(datePicker: dateDatePicker) { [weak self] (_) in
                     self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
             } else if indexPath == IndexPath(row: 1, section: 1) {
@@ -374,10 +373,6 @@ extension NewTaskView {
                     self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
             } else if indexPath == IndexPath(row: 0, section: 2) {
-                self.showPickerView(pickerView: repeatsPicker) { [weak self] (_) in
-                    self?.tableView.reloadSections([indexPath.section], with: .automatic)
-                }
-            } else if indexPath == IndexPath(row: 0, section: 3) {
                 self.showPickerView(pickerView: notificationPicker) { [weak self] (_) in
                     self?.tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
