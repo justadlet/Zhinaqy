@@ -75,7 +75,7 @@ class PlansView: UIViewController {
     }
     
     
-    init(viewModel:  PlansViewModel) {
+    init(viewModel: PlansViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.viewModel.fetchController.delegate = self
